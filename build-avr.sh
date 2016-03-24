@@ -25,7 +25,7 @@ SOURCES=`pwd`/.avr-src
 # Program variables
 WGET_CMD="--quiet"
 BINUTILS_CONFIG="--prefix=$PREFIX --target=avr --disable-nls"
-GCC_CONFIG="--prefix=$PREFIX --target=avr --enable-languages=c,c++ --disable-nls"
+GCC_CONFIG="--prefix=$PREFIX --target=avr --enable-languages=c,c++ --disable-nls --disable-libssp --with-dwarf2"
 AVRLIBC_CONFIG="--prefix=$PREFIX --host=avr"
 AVRDUDE_CONFIG="--prefix=$PREFIX"
 # Functions
