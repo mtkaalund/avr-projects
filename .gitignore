@@ -30,3 +30,8 @@
 
 # Debug files
 *.dSYM/
+
+# Folders
+.avr-src
+.toolchain
+toolchain
