@@ -31,6 +31,7 @@ AVRDUDE_CONFIG="--prefix=$PREFIX"
 # Functions
 function download_sources() {
 	if [ ! -d "$SOURCES" ]; then
+		printf 'Creating directory: %s\n' "$SOURCES"
 		mkdir -p $SOURCES
 	fi
 
@@ -38,18 +39,22 @@ function download_sources() {
 
 	cd $SOURCES
 
-	echo "Downloading sources"
+	printf "Downloading sources\n"
 
 	array_max=${#FILE_LOCAL[*]}
 
 	for (( i=0; i<=$(( $array_max -1 )); i++ ))
 	do
-		echo "${FILE_LOCAL[$i]} ${FILE_URLS[$i]}"
+		printf '\t%s\n' "${FILE_LOCAL[$i]}"
+		if [ -f "${FILE_LOCAL[$i]}" ]; then
+			rm -f "${FILE_LOCAL[$i]}"
+		fi
+		
+		wget $WGET_CMD ${FILE_URLS[$i]}
 	done
-
 
 	cd $OLD_PWD
 }
 
 # Main program
-download_sources()
+download_sources
