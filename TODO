@@ -4,3 +4,4 @@ TODO:
 	*	create function for compiling
 		- avr-libc
 		- avrdude
+	*	create .gitignore
