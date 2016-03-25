@@ -15,6 +15,7 @@ GCC_ISL_VERSION="0.16.1"
 AVRLIBC_VERSION="2.0.0"
 AVRDUDE_VERSION="6.3"
 AVRGDB_VERSION="7.11"
+SIMAVR_VERSION="1.3"
 # Files
 BINUTILS_FILE="binutils-$BINUTILS_VERSION.tar.gz"
 GCC_FILE="gcc-$GCC_VERSION.tar.gz"
@@ -25,6 +26,7 @@ GCC_ISL_FILE="isl-$GCC_ISL_VERSION.tar.gz"
 AVRLIBC_FILE="avr-libc-$AVRLIBC_VERSION.tar.bz2"
 AVRDUDE_FILE="avrdude-$AVRDUDE_VERSION.tar.gz"
 AVRGDB_FILE="gdb-$AVRGDB_VERSION.tar.gz"
+SIMAVR_FILE="v$SIMAVR_VERSION.tar.gz"
 # Download urls
 BINUTILS_URL="http://ftp.gnu.org/gnu/binutils/$BINUTILS_FILE"
 GCC_URL="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-$GCC_VERSION/$GCC_FILE"
@@ -35,6 +37,7 @@ GCC_ISL_URL="http://isl.gforge.inria.fr/$GCC_ISL_FILE"
 AVRLIBC_URL="http://download.savannah.gnu.org/releases/avr-libc/$AVRLIBC_FILE" 
 AVRDUDE_URL="http://download.savannah.gnu.org/releases/avrdude/$AVRDUDE_FILE"
 AVRGDB_URL="http://ftp.gnu.org/gnu/gdb/$AVRGDB_FILE"
+SIMAVR_URL="https://github.com/buserror/simavr/archive/$SIMAVR_FILE"
 # PATH variables
 PREFIX=`pwd`/.toolchain
 SOURCES=`pwd`/.avr-src
@@ -331,13 +334,52 @@ function build_gdb() {
 	rm -rf obj-gdb gdb-$AVRGDB_VERSION $AVRGDB_FILE
 	cd $OLD_PWD
 }
+
+function build_simavr() {
+	OLD_PWD=`pwd`
+
+	if [ ! -d "$SOURCES" ]; then
+		mkdir $SOURCES
+	fi
+
+	cd $SOURCES
+
+	printf "Building simavr\n"
+	
+	if [ ! -f "$SIMAVR_FILE" ]; then
+		printf "\tDownloading %s\n" "$SIMAVR_FILE"
+		wget $WGET_CMD $SIMAVR_URL
+	fi
+
+	if [ -d "simavr-$SIMAVR_VERSION" ]; then
+		printf "\tRemoving old extraction\n"
+		rm -rf simavr-$SIMAVR_VERSION
+	fi
+
+	printf "\tExtracting simavr\n"
+	tar xf $SIMAVR_FILE
+
+	cd simavr-$SIMAVR_VERSION
+	
+	printf "\tCompiling simavr\n"
+	make AVR_ROOT="$PREFIX/avr" RELEASE=1 CFLAGS="-O0 -Wall -Wextra -g -fPIC -std=gnu99 -Wno-sign-compare -Wno-unused-parameter" build-simavr
+	printf "\tInstalling simavr\n"
+	make AVR_ROOT="$PREFIX/avr" PREFIX="$PREFIX" DESTDIR="$PREFIX" install
+	
+	cd $SOURCES
+	printf "\tCleaning up\n"
+	rm -rf simavr-$SIMAVR_VERSION $SIMAVR_FILE
+
+	cd $OLD_PWD
+}
 # Main program
 
 #build_binutils
 #build_gcc
 #build_avrlibc
 #build_avrdude
-build_gdb
+#build_gdb
+build_simavr
 
 # Clean up
 #rm -rf $SOURCES
