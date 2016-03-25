@@ -35,7 +35,7 @@ AVRDUDE_URL="http://download.savannah.gnu.org/releases/avrdude/$AVRDUDE_FILE"
 # PATH variables
 PREFIX=`pwd`/.toolchain
 SOURCES=`pwd`/.avr-src
-PATH=$PATH:$PREFIX/bin
+PATH=$PREFIX/bin:$PATH
 export PATH
 # Program variables
 WGET_CMD="--quiet"
@@ -78,7 +78,7 @@ function build_binutils() {
 	cd obj-binutils
 	
 	printf "\tConfigure binutils\n"
-	../binutils-$BINUTILS_VERSION/configure $BINUTILS_CONFIG	
+	../binutils-$BINUTILS_VERSION/configure $BINUTILS_CONFIG
 	printf "\tCompiling binutils\n"
 	make
 	printf "\tInstalling binutils\n"
@@ -164,7 +164,7 @@ function build_gcc() {
 	printf "\tCompiling gcc\n"
 	make
 	printf "\tInstalling gcc\n"
-	make install-strip
+	make install
 
 	cd $SOURCES
 	printf "\tCleaning up after gcc\n"
@@ -175,7 +175,10 @@ function build_gcc() {
 
 function build_avrlibc() {
 	OLD_PWD=`pwd`
+	OLD_CC="$CC"
+	unset CC
 
+	printf "PATH variable: %s\n" $PATH
 	if [ ! -d "$SOURCES" ]; then
 		mkdir -p $SOURCES
 	fi
@@ -211,6 +214,7 @@ function build_avrlibc() {
 	printf "\tCleaning up after avr-libc\n"
 	rm -rf avr-libc-$AVRLIBC_VERSION $AVRLIBC_FILE
 
+	CC=$OLD_CC
 	cd $OLD_PWD
 }
 # Main program
