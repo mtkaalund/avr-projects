@@ -232,11 +232,56 @@ function build_avrlibc() {
 	CC=$OLD_CC
 	cd $OLD_PWD
 }
+
+function build_avrdude() {
+	OLD_PWD=`pwd`
+	
+	if [ ! -d "$SOURCES" ]; then
+		mkdir -p $SOURCES
+	fi
+
+	cd $SOURCES
+
+	printf "Building AVRDUDE\n"
+
+	if [ ! -f "$AVRDUDE_FILE" ]; then
+		printf "\tDownloading $AVRDUDE_FILE\n"
+		wget $WGET_CMD $AVRDUDE_URL
+	fi
+
+	if [ -d "avrdude-$AVRDUDE_VERSION" ]; then
+		printf "\tRemoving old extracted files\n"
+		rm -rf avrdude-$AVRDUDE_VERSION
+	fi
+
+	printf "\tExtracting files\n"
+	tar xf $AVRDUDE_FILE
+
+	if [ -d "obj-avrdude" ]; then
+		printf "\tRemoving old object directory\n"
+		rm -rf obj-avrdude
+	fi
+	
+	printf "\tCreating avrdude object directory\n"
+	mkdir -p obj-avrdude
+
+	printf "\tConfigure avrdude\n"	
+	../avrdude-$AVRDUDE_VERSION/configure --prefix=$PREFIX
+	
+	printf "\tCompiling avrdude\n"
+	make
+
+	printf "\tInstalling avrdude\n"
+	make install
+	
+	cd $OLD_PWD
+}
 # Main program
 
-build_binutils
-build_gcc
-build_avrlibc
+#build_binutils
+#build_gcc
+#build_avrlibc
+build_avrdude
 
 # Clean up
 rm -rf $SOURCES
