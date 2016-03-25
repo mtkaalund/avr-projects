@@ -47,9 +47,14 @@ AVRDUDE_CONFIG="--prefix=$PREFIX"
 function build_binutils() {
 	OLD_PWD=`pwd`
 	
-	printf "Building binutils\n"
+	if [ ! -d "$SOURCES" ]; then
+		mkdir -p $SOURCES
+	fi
 
 	cd $SOURCES
+
+	printf "Building binutils\n"
+
 	if [ ! -f "$BINUTILS_FILE" ]; then
 		printf "\tDownloading %s\n" "$BINUTILS_FILE"
 		wget $WGET_CMD $BINUTILS_URL
@@ -86,6 +91,10 @@ function build_binutils() {
 
 function build_gcc() {
 	OLD_PWD=`pwd`
+
+	if [ ! -d "$SOURCES" ]; then
+		mkdir -p $SOURCES
+	fi
 	
 	cd $SOURCES
 	
@@ -166,10 +175,15 @@ function build_gcc() {
 
 function build_avrlibc() {
 	OLD_PWD=`pwd`
+
+	if [ ! -d "$SOURCES" ]; then
+		mkdir -p $SOURCES
+	fi
 	
+	cd $SOURCES
+
 	printf "Building avr-libc\n"
 
-	cd $SOURCES
 	if [ ! -f "$AVRLIBC_FILE" ]; then
 		printf "\tDownloading %s\n" "$AVRLIBC_FILE"
 		wget $WGET_CMD $AVRLIBC_URL
