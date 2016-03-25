@@ -39,8 +39,8 @@ PATH=$PREFIX/bin:$PATH
 export PATH
 # Program variables
 WGET_CMD="--quiet"
-BINUTILS_CONFIG="--prefix=$PREFIX --target=avr --disable-nls"
-GCC_CONFIG="--prefix=$PREFIX --target=avr --enable-languages=c,c++ --disable-nls --disable-libssp --with-dwarf2" #--with-avrlib"
+BINUTILS_CONFIG="--prefix=$PREFIX --target=avr --disable-nls --enable-ld=default --enable-gold --enable-plugins --enable-threads --with-pic --enable-shared --disable-werror --disable-multilib"
+GCC_CONFIG="--prefix=$PREFIX --target=avr --enable-languages=c,c++ --disable-nls --disable-libssp --with-dwarf2 --disable-install-libiberty --disable-libstdcxx-pch --disable-libunwind-exceptions --disable-linker-build-id --disable-werror --enable-__cxa_atexit --enable-checking=release --enable-clocale=gnu --enable-gnu-unique-object --enable-gold --enable-ld=default --enable-lto --enable-plugin --enable-shared --with-gnu-as --with-gnu-ld --with-system-zlib --with-isl --enable-gnu-indirect-function" #--with-avrlib"
 AVRLIBC_CONFIG="--prefix=$PREFIX --host=avr"
 AVRDUDE_CONFIG="--prefix=$PREFIX"
 # Functions
@@ -78,12 +78,25 @@ function build_binutils() {
 	cd obj-binutils
 	
 	printf "\tConfigure binutils\n"
-	../binutils-$BINUTILS_VERSION/configure $BINUTILS_CONFIG
-	printf "\tCompiling binutils\n"
-	make
+	../binutils-$BINUTILS_VERSION/configure $BINUTILS_CONFIG --build=`./config.guess`
+	printf "\trunning configure-host\n"
+	make configure-host
+	printf "\tmake tooldir\n"
+	make tooldir=$PREFIX
 	printf "\tInstalling binutils\n"
-	make install
+	make prefix=$PREFIX tooldir=$PREFIX install
 	printf "\tCleaning up after binutils\n"
+
+	for bin in ar as nm objcopy objdump ranlib strip readelf; do
+		rm -f $PREFIX/bin/${bin}
+	done
+
+	for info in as bfd binutils gprof ld; do
+		mv $PREFIX/share/info/${info}.info $PREFIX/share/info/avr-${info}.info
+	done
+
+	rm -r $PREFIX/share/locale
+
 	rm -rf obj-binutils binutils-$BINUTILS_VERSION $BINUTILS_FILE
 		
 	cd $OLD_PWD
@@ -151,6 +164,8 @@ function build_gcc() {
 
 	printf "\tmoving ISL into gcc directory\n"
 	mv isl-$GCC_ISL_VERSION gcc-$GCC_VERSION/isl
+
+	echo ${GCC_VERSION} > gcc-$GCC_VERSION/BASE-VER
 
 	if [ -d "obj-gcc" ]; then
 		printf "\tRemoving old object directory\n"
