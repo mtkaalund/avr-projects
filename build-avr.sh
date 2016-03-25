@@ -14,6 +14,7 @@ GCC_MPC_VERSION="1.0.3"
 GCC_ISL_VERSION="0.16.1"
 AVRLIBC_VERSION="2.0.0"
 AVRDUDE_VERSION="6.3"
+AVRGDB_VERSION="7.11"
 # Files
 BINUTILS_FILE="binutils-$BINUTILS_VERSION.tar.gz"
 GCC_FILE="gcc-$GCC_VERSION.tar.gz"
@@ -23,6 +24,7 @@ GCC_MPC_FILE="mpc-$GCC_MPC_VERSION.tar.gz"
 GCC_ISL_FILE="isl-$GCC_ISL_VERSION.tar.gz"
 AVRLIBC_FILE="avr-libc-$AVRLIBC_VERSION.tar.bz2"
 AVRDUDE_FILE="avrdude-$AVRDUDE_VERSION.tar.gz"
+AVRGDB_FILE="gdb-$AVRGDB_VERSION.tar.gz"
 # Download urls
 BINUTILS_URL="http://ftp.gnu.org/gnu/binutils/$BINUTILS_FILE"
 GCC_URL="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-$GCC_VERSION/$GCC_FILE"
@@ -32,6 +34,7 @@ GCC_MPC_URL="ftp://ftp.gnu.org/gnu/mpc/$GCC_MPC_FILE"
 GCC_ISL_URL="http://isl.gforge.inria.fr/$GCC_ISL_FILE"
 AVRLIBC_URL="http://download.savannah.gnu.org/releases/avr-libc/$AVRLIBC_FILE" 
 AVRDUDE_URL="http://download.savannah.gnu.org/releases/avrdude/$AVRDUDE_FILE"
+AVRGDB_URL="http://ftp.gnu.org/gnu/gdb/$AVRGDB_FILE"
 # PATH variables
 PREFIX=`pwd`/.toolchain
 SOURCES=`pwd`/.avr-src
@@ -43,6 +46,7 @@ BINUTILS_CONFIG="--prefix=$PREFIX --target=avr --disable-nls --enable-ld=default
 GCC_CONFIG="--prefix=$PREFIX --target=avr --enable-languages=c,c++ --disable-nls --disable-libssp --with-dwarf2 --disable-install-libiberty --disable-libstdcxx-pch --disable-libunwind-exceptions --disable-linker-build-id --disable-werror --enable-__cxa_atexit --enable-checking=release --enable-clocale=gnu --enable-gnu-unique-object --enable-gold --enable-ld=default --enable-lto --enable-plugin --enable-shared --with-gnu-as --with-gnu-ld --with-system-zlib --with-isl --enable-gnu-indirect-function" #--with-avrlib"
 AVRLIBC_CONFIG="--prefix=$PREFIX --host=avr"
 AVRDUDE_CONFIG="--prefix=$PREFIX"
+AVRGDB_CONFIG="--prefix=$PREFIX"
 # Functions
 function build_binutils() {
 	OLD_PWD=`pwd`
@@ -281,12 +285,58 @@ function build_avrdude() {
 	
 	cd $OLD_PWD
 }
+
+function build_gdb() {
+	OLD_PWD=`pwd`
+	
+	if [ ! -d "$SOURCES" ]; then
+		mkdir -p $SOURCES
+	fi
+
+	cd $SOURCES
+	printf "Building GDB\n"
+
+	if [ ! -f "$AVRGDB_FILE" ]; then
+		printf "\tDownloading %s\n" "$AVRGDB_FILE"
+		wget $WGET_CMD $AVRGDB_URL
+	fi
+
+	if [ -d "gdb-$AVRGDB_VERSION" ]; then
+		printf "\tRemoving old extraction\n"
+		rm -rf gdb-$AVRGDB_VERSION
+	fi
+
+	printf "\tExtracting GDB\n"
+	tar xf $AVRGDB_FILE
+
+	if [ -d "obj-gdb" ]; then
+		printf "\tRemoving object directory\n"
+		rm -rf obj-gdb
+	fi
+
+	printf "\tCreating object directory\n"
+	mkdir -pv obj-gdb
+
+	cd obj-gdb
+	
+	printf "\tConfigure gdb\n"
+	../gdb-$AVRGDB_VERSION/configure $AVRGDB_CONFIG
+	printf "\tCompile gdb\n"
+	make
+	printf "\tInstalling gdb\n"
+	make install
+
+	cd $SOURCES
+	rm -rf obj-gdb gdb-$AVRGDB_VERSION $AVRGDB_FILE
+	cd $OLD_PWD
+}
 # Main program
 
 #build_binutils
 #build_gcc
 #build_avrlibc
-build_avrdude
+#build_avrdude
+build_gdb
 
 # Clean up
 #rm -rf $SOURCES
