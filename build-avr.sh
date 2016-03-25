@@ -327,6 +327,7 @@ function build_gdb() {
 	make install
 
 	cd $SOURCES
+	printf "\tCleaning up after installing gdb\n"
 	rm -rf obj-gdb gdb-$AVRGDB_VERSION $AVRGDB_FILE
 	cd $OLD_PWD
 }
