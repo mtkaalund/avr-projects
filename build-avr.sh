@@ -33,14 +33,14 @@ GCC_ISL_URL="http://isl.gforge.inria.fr/$GCC_ISL_FILE"
 AVRLIBC_URL="http://download.savannah.gnu.org/releases/avr-libc/$AVRLIBC_FILE" 
 AVRDUDE_URL="http://download.savannah.gnu.org/releases/avrdude/$AVRDUDE_FILE"
 # PATH variables
-PREFIX=`pwd`/toolchain
+PREFIX=`pwd`/.toolchain
 SOURCES=`pwd`/.avr-src
 PATH=$PATH:$PREFIX/bin
 export PATH
 # Program variables
 WGET_CMD="--quiet"
 BINUTILS_CONFIG="--prefix=$PREFIX --target=avr --disable-nls"
-GCC_CONFIG="--prefix=$PREFIX --target=avr --enable-languages=c,c++ --disable-nls --disable-libssp --with-dwarf2"
+GCC_CONFIG="--prefix=$PREFIX --target=avr --enable-languages=c,c++ --disable-nls --disable-libssp --with-dwarf2" #--with-avrlib"
 AVRLIBC_CONFIG="--prefix=$PREFIX --host=avr"
 AVRDUDE_CONFIG="--prefix=$PREFIX"
 # Functions
@@ -150,15 +150,60 @@ function build_gcc() {
 	mkdir obj-gcc
 	cd obj-gcc
 
+	printf "\tConfigure gcc\n"
 	../gcc-$GCC_VERSION/configure $GCC_CONFIG
+	printf "\tCompiling gcc\n"
 	make
-	make install
+	printf "\tInstalling gcc\n"
+	make install-strip
 
 	cd $SOURCES
+	printf "\tCleaning up after gcc\n"
 	rm -rf obj-gcc gcc-$GCC_VERSION $GCC_FILE $GCC_GMP_FILE $GCC_MPFR_FILE $GCC_MPC_FILE $GCC_ISL_FILE	
 
 	cd $OLD_PWD
 }
+
+function build_avrlibc() {
+	OLD_PWD=`pwd`
+	
+	printf "Building avr-libc\n"
+
+	cd $SOURCES
+	if [ ! -f "$AVRLIBC_FILE" ]; then
+		printf "\tDownloading %s\n" "$AVRLIBC_FILE"
+		wget $WGET_CMD $AVRLIBC_URL
+	fi
+
+	if [ -d "avr-libc-$AVRLIBC_VERSION" ]; then
+		printf "\tRemoving old extracted\n"
+		rm -rf avr-libc-$AVRLIBC_VERSION
+	fi
+
+	printf "\tExtracting %s\n" "$AVRLIBC_FILE"
+	tar xf $AVRLIBC_FILE
+
+	printf "\tConfigure avr-libc\n"
+	cd avr-libc-$AVRLIBC_VERSION
+	./bootstrap
+	./configure $AVRLIBC_CONFIG --build=`./config.guess`
+	
+	printf "\tCompiling avr-libc\n"
+	make
+
+	printf "\tInstalling avr-libc\n"
+	make install
+
+	printf "\tCleaning up after avr-libc\n"
+	rm -rf avr-libc-$AVRLIBC_VERSION $AVRLIBC_FILE
+
+	cd $OLD_PWD
+}
 # Main program
-#build_binutils
+
+build_binutils
 build_gcc
+build_avrlibc
+
+# Clean up
+rm -rf $SOURCES
