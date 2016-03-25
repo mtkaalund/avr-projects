@@ -264,7 +264,8 @@ function build_avrdude() {
 	
 	printf "\tCreating avrdude object directory\n"
 	mkdir -p obj-avrdude
-
+	cd obj-avrdude
+	
 	printf "\tConfigure avrdude\n"	
 	../avrdude-$AVRDUDE_VERSION/configure --prefix=$PREFIX
 	
@@ -273,6 +274,10 @@ function build_avrdude() {
 
 	printf "\tInstalling avrdude\n"
 	make install
+
+	printf "\tCleaning up after avrdude\n"
+	cd $SOURCES
+	rm -rf obj-avrdude avrdude-$AVRDUDE_VERSION $AVRDUDE_FILE
 	
 	cd $OLD_PWD
 }
@@ -284,4 +289,4 @@ function build_avrdude() {
 build_avrdude
 
 # Clean up
-rm -rf $SOURCES
+#rm -rf $SOURCES
