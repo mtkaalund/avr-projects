@@ -6,6 +6,25 @@
 #			This will install the toolchain
 #			in a local directory which the
 #			makefiles will reference to.
+printf "Checking there is a configurations file\n"
+if [ -f "./avr-tools-build.conf" ]; then
+	printf "Using configuration file in current directory\n"
+	source ./avr-tools-build.conf
+else
+	printf "No configurations files found in search directories.\n"
+	printf "Using fall back config\n"
+	main_directory=`pwd`
+	sources_directory=${main_directory}/.avr-sources
+	install_directory=${main_directroy}/.avr-toolchain
+	package_directroy=${main_directory}/packages
+fi
+
+# PATH variables
+PREFIX=${install_directory}
+SOURCES=${sources_directory}
+PATH=$PREFIX/bin:$PATH
+export PATH
+
 BINUTILS_VERSION="2.26"
 GCC_VERSION="5.3.0"
 GCC_GMP_VERSION="6.1.0"
@@ -38,11 +57,6 @@ AVRLIBC_URL="http://download.savannah.gnu.org/releases/avr-libc/$AVRLIBC_FILE"
 AVRDUDE_URL="http://download.savannah.gnu.org/releases/avrdude/$AVRDUDE_FILE"
 AVRGDB_URL="http://ftp.gnu.org/gnu/gdb/$AVRGDB_FILE"
 SIMAVR_URL="https://github.com/buserror/simavr/archive/$SIMAVR_FILE"
-# PATH variables
-PREFIX=`pwd`/.toolchain
-SOURCES=`pwd`/.avr-src
-PATH=$PREFIX/bin:$PATH
-export PATH
 # Program variables
 WGET_CMD="--quiet"
 BINUTILS_CONFIG="--prefix=$PREFIX --target=avr --disable-nls --enable-ld=default --enable-gold --enable-plugins --enable-threads --with-pic --enable-shared --disable-werror --disable-multilib"
