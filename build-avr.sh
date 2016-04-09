@@ -6,6 +6,13 @@
 #			This will install the toolchain
 #			in a local directory which the
 #			makefiles will reference to.
+
+# isFunc name_of_function
+# returns 0 or 1
+# Checks if function exists
+isFunc() { declare -Ff "$1" >/dev/null; }
+
+## Loading configurations file
 printf "Checking there is a configurations file\n"
 if [ -f "./avr-tools-build.conf" ]; then
 	printf "Using configuration file in current directory\n"
@@ -24,6 +31,8 @@ PREFIX=${install_directory}
 SOURCES=${sources_directory}
 PATH=$PREFIX/bin:$PATH
 export PATH
+printf "Adding path environment variable to $HOME/.profile\n"
+echo "PATH=$PATH" >> $HOME/.profile
 
 BINUTILS_VERSION="2.26"
 GCC_VERSION="5.3.0"
