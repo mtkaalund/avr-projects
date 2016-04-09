@@ -87,6 +87,9 @@ download() {
 	else
 		printf "\tfile: %s\nExists using old sources\n" "$2.$3"
 	fi
+	printf "Extracting %s\n" "$2.$3"
+	tar xf "$2.$3"
+	return 0
 }
 
 printf "Done with this\n"
