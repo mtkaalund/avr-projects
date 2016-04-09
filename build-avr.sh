@@ -374,12 +374,12 @@ function build_simavr() {
 }
 # Main program
 
-#build_binutils
-#build_gcc
-#build_avrlibc
-#build_avrdude
-#build_gdb
+build_binutils
+build_gcc
+build_avrlibc
+build_avrdude
+build_gdb
 build_simavr
 
 # Clean up
-#rm -rf $SOURCES
+rm -rf $SOURCES
