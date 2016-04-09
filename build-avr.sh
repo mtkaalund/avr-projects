@@ -34,6 +34,14 @@ export PATH
 printf "Adding path environment variable to $HOME/.profile\n"
 echo "PATH=$PATH" >> $HOME/.profile
 
+if [ ! -d $SOURCES ]; then
+	mkdir -p $SOURCES
+fi
+
+if [ ! -d $PREFIX ]; then
+	mkdir -p $PREFIX
+fi
+
 main() {
 	for package in `ls ${package_directory}`
 	do
@@ -49,7 +57,36 @@ main() {
 		printf "\t\tfile: %s.%s\n" "$file" "$compress"
 		printf "\t\turl: %s\n" "$url"
 		printf "\t\tconfig: %s\n" "$config"
+
+		## first we need to download the file
+		custom_download=`isFunc get_source`
+		if [ $custom_download ]; then
+			printf "\t\tPackage has custom download function\n"
+			get_source
+		else
+			printf "\t\tPackage using default download function\n"
+			download "$url" "$file" "$compress"
+		fi
 	done
+}
+
+download() {
+	cd $SOURCES
+
+	if [ ! -f "$2.$3" ]; then
+		printf "\tfile: %s\n\tDownloading: " "$1"
+	
+		wget --quiet $1
+		if [ -f "$2.$3" ]; then
+			printf "DONE\n"
+			return 0
+		else
+			printf "FAILED\n"
+			return 1
+		fi
+	else
+		printf "\tfile: %s\nExists using old sources\n" "$2.$3"
+	fi
 }
 
 printf "Done with this\n"
