@@ -34,10 +34,23 @@ export PATH
 printf "Adding path environment variable to $HOME/.profile\n"
 echo "PATH=$PATH" >> $HOME/.profile
 
-for package in `ls ${package_directory}`
-do
-	echo $package
-	cat ${package_directory}/$package
-done
+main() {
+	for package in `ls ${package_directory}`
+	do
+		#first we need to unset the variables
+		unset version
+		unset compress
+		unset file
+		unset url
+		unset config
+		printf "\tSourcing %s\n" "$package"
+		source ${package_directory}/$package
+		printf "\t\tversion: %s\n" "$version"
+		printf "\t\tfile: %s.%s\n" "$file" "$compress"
+		printf "\t\turl: %s\n" "$url"
+		printf "\t\tconfig: %s\n" "$config"
+	done
+}
 
 printf "Done with this\n"
+main
