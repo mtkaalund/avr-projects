@@ -1,0 +1,6 @@
+### package file: binutils
+version="2.26"
+compress="tar.gz"
+file="binutils-$version"
+url="http://ftp.gnu.org/gnu/binutils/$file.$compress"
+config="--prefix=$PREFIX --target=avr --disable-nls --enable-ld=default --enable-gold --enable-plugins --enable-threads --with-pic --enable-shared --disable-werror --disable-multilib"
