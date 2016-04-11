@@ -51,13 +51,14 @@ main() {
 		unset file
 		unset url
 		unset config
+		unset build_dir
 		printf "\tSourcing %s\n" "$package"
 		source ${package_directory}/$package
 		printf "\t\tversion: %s\n" "$version"
 		printf "\t\tfile: %s.%s\n" "$file" "$compress"
 		printf "\t\turl: %s\n" "$url"
 		printf "\t\tconfig: %s\n" "$config"
-
+		printf "\t\tbuild dir: %s\n" "$build_dir"
 		## first we need to download the file
 		custom_download=`isFunc get_source`
 		if [ $custom_download ]; then
@@ -67,17 +68,32 @@ main() {
 			printf "\t\tPackage using default download function\n"
 			download "$url" "$file" "$compress"
 		fi
+		unset custom_download
+
+		custom_config=`isFunc do_config`
+		if [ $custom_config ]; then
+			printf "\t\tPackage has custom config function\n"
+			do_config
+		else
+			printf "\t\tPackage using default config function\n"
+			def_config "$file" "$config" "$build_dir"
+		fi
+		
 	done
 }
 
 download() {
-	cd $SOURCES
+	pushd $SOURCES
+	
+	file=$2
+	compress=$3
+	url=$1
 
-	if [ ! -f "$2.$3" ]; then
-		printf "\tfile: %s\n\tDownloading: " "$1"
+	if [ ! -f "$file.$compress" ]; then
+		printf "\tfile: %s\n\tDownloading: " "$url"
 	
 		wget --quiet $1
-		if [ -f "$2.$3" ]; then
+		if [ -f "$file.$compress" ]; then
 			printf "DONE\n"
 			return 0
 		else
@@ -85,11 +101,34 @@ download() {
 			return 1
 		fi
 	else
-		printf "\tfile: %s\nExists using old sources\n" "$2.$3"
+		printf "\tfile: %s\nExists using old sources\n" "$file.$compress"
 	fi
-	printf "Extracting %s\n" "$2.$3"
-	tar xf "$2.$3"
+	printf "Extracting %s\n" "$file.$compress"
+	tar xf "$file.$compress"
+	# Returns to execute directory
+	popd
+
 	return 0
+}
+
+def_config() {
+	file=$1
+	config=$2
+	build_dir=$3
+
+	pushd $SOURCES/$file
+	if [ "$build_dir" -eq "yes" ]; then
+		mkdir build
+		pushd build
+		
+		./configure $config
+
+		popd
+	else
+		./configure $config
+	fi
+
+	popd
 }
 
 printf "Done with this\n"
