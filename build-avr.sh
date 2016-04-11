@@ -60,13 +60,13 @@ main() {
 		printf "\t\tconfig: %s\n" "$config"
 		printf "\t\tbuild dir: %s\n" "$build_dir"
 		## first we need to download the file
-		custom_download=`isFunc get_source`
+		custom_download=`isFunc do_download`
 		if [ $custom_download ]; then
 			printf "\t\tPackage has custom download function\n"
-			get_source
+			do_download
 		else
 			printf "\t\tPackage using default download function\n"
-			download "$url" "$file" "$compress"
+			def_download "$url" "$file" "$compress"
 		fi
 		unset custom_download
 
@@ -78,11 +78,22 @@ main() {
 			printf "\t\tPackage using default config function\n"
 			def_config "$file" "$config" "$build_dir"
 		fi
-		
+		unset custom_config
+
+		custom_build=`isFunc do_build`
+		if [ $custom_build ]; then
+			printf "\t\tPackage has custom build function\n"
+			do_build
+		else
+			printf "\t\tPackage using default build function\n"
+			def_build "$file" "$build_dir"
+		fi
+		unset custom_build
+			
 	done
 }
 
-download() {
+def_download() {
 	pushd $SOURCES
 	
 	file=$2
@@ -121,11 +132,30 @@ def_config() {
 		mkdir build
 		pushd build
 		
-		./configure $config
+		../configure $config
 
 		popd
 	else
 		./configure $config
+	fi
+
+	popd
+}
+
+def_build() {
+	file=$1
+	build_dir=$2
+
+	pushd $SOURCES/$file
+	
+	if [ "$build_dir"="yes" ]; then
+		pushd build
+
+		make
+
+		popd
+	else
+		make
 	fi
 
 	popd
