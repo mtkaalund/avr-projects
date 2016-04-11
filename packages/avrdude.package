@@ -1,0 +1,7 @@
+### package file: avrdude
+version="6.3"
+compress="tar.bz2"
+file="avrdude-$version"
+url="http://download.savannah.gnu.org/releases/avrdude/$file.$compress"
+config="--prefix=$PREFIX"
+build_dir="no"
