@@ -30,9 +30,12 @@ fi
 PREFIX=${install_directory}
 SOURCES=${sources_directory}
 PATH=$PREFIX/bin:$PATH
-export PATH
-printf "Adding path environment variable to $HOME/.profile\n"
-echo "PATH=$PATH" >> $HOME/.profile
+
+if [ ! grep -q "PATH=$PATH" "$HOME/.profile" ]; then
+	export PATH
+	printf "Adding path environment variable to $HOME/.profile\n"
+	echo "PATH=$PATH" >> $HOME/.profile
+fi
 
 if [ ! -d $SOURCES ]; then
 	mkdir -p $SOURCES
