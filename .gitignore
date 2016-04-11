@@ -32,6 +32,6 @@
 *.dSYM/
 
 # Folders
-.avr-src
 .toolchain
 toolchain
+.avr-*
