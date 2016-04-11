@@ -10,7 +10,13 @@
 # isFunc name_of_function
 # returns 0 or 1
 # Checks if function exists
-isFunc() { declare -Ff "$1" >/dev/null; }
+isFunc() { 
+	if type -t $1 > /dev/null; then
+		return 0
+	else
+		return 1
+	fi
+}
 
 ## Loading configurations file
 printf "Checking there is a configurations file\n"
@@ -65,45 +71,45 @@ main() {
 
 		if [ ! -f $PREFIX/.stamp-$file ]; then
 			## first we need to download the file
-			custom_download=`isFunc do_download`
-			if [ $custom_download ]; then
+#			custom_download=`isFunc do_download`
+			if isFunc do_download; then
 				printf "\t\tPackage has custom download function\n"
 				do_download
 			else
 				printf "\t\tPackage using default download function\n"
 				def_download "$url" "$file" "$compress"
 			fi
-			unset custom_download
+#			unset custom_download
 
-			custom_config=`isFunc do_config`
-			if [ $custom_config ]; then
+#			custom_config=`isFunc do_config`
+			if isFunc do_config; then
 				printf "\t\tPackage has custom config function\n"
 				do_config
 			else
 				printf "\t\tPackage using default config function\n"
 				def_config "$file" "$config" "$build_dir"
 			fi
-			unset custom_config
+#			unset custom_config
 
-			custom_build=`isFunc do_build`
-			if [ $custom_build ]; then
+#			custom_build=`isFunc do_build`
+			if isFunc do_build; then
 				printf "\t\tPackage has custom build function\n"
 				do_build
 			else
 				printf "\t\tPackage using default build function\n"
 				def_build "$file" "$build_dir"
 			fi
-			unset custom_build
+#			unset custom_build
 
-			custom_install=`isFunc do_install`
-			if [ $custom_install ]; then
+#			custom_install=`isFunc do_install`
+			if isFunc do_install; then
 				printf "\t\tPackage has custom install function\n"
 				do_install
 			else
 				printf "\t\tPackage using default install function\n"
 				def_install "$file" "$build_dir"
 			fi			
-			unset custom_install
+#			unset custom_install
 		else
 			printf "\t\tPackage already installed\n"
 		fi
