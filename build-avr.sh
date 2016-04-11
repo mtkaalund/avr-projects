@@ -117,7 +117,7 @@ def_config() {
 	build_dir=$3
 
 	pushd $SOURCES/$file
-	if [ "$build_dir" -eq "yes" ]; then
+	if [ "$build_dir"="yes" ]; then
 		mkdir build
 		pushd build
 		
