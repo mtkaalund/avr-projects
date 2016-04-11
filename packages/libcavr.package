@@ -1,0 +1,7 @@
+### package file: avr-libc
+version="2.0.0"
+compress="tar.bz2"
+file="avr-libc-$version"
+url="http://download.savannah.gnu.org/releases/avr-libc/$file.$compress"
+config="--prefix=$PREFIX --host=avr"
+build_dir="no"
