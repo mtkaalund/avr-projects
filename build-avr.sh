@@ -31,18 +31,18 @@ PREFIX=${install_directory}
 SOURCES=${sources_directory}
 PATH=$PREFIX/bin:$PATH
 
-if [ ! grep -q "PATH=$PATH" "$HOME/.profile" ]; then
+if [ ! `grep -q "PATH=$PATH" "$HOME/.profile"` ]; then
 	export PATH
 	printf "Adding path environment variable to $HOME/.profile\n"
 	echo "PATH=$PATH" >> $HOME/.profile
 fi
 
 if [ ! -d $SOURCES ]; then
-	mkdir -p $SOURCES
+	mkdir -pv $SOURCES
 fi
 
 if [ ! -d $PREFIX ]; then
-	mkdir -p $PREFIX
+	mkdir -pv $PREFIX
 fi
 
 main() {
@@ -123,7 +123,6 @@ def_download() {
 		wget --quiet $1
 		if [ -f "$file.$compress" ]; then
 			printf "DONE\n"
-			return 0
 		else
 			printf "FAILED\n"
 			return 1
