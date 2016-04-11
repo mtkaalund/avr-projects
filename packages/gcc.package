@@ -1,0 +1,27 @@
+### package file: gcc
+version="5.3.0"
+compress="tar.gz"
+file="gcc-$version"
+url="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/$file/$file.$compress"
+config="--prefix=$PREFIX --target=avr --disable-nls --enable-languages=c,c++ --disable-libssp --with-dwarf2 --disable-install-libiberty --disable-libstdcxx-pch --disable-libunwind-exceptions --disable-linker-build-ld --disable-werror --enable-__cxa_atexit --enable-checking=release --enable-clocale=gnu --enable-gnu-unique-object --enable-gold --enable-ld=default --enable-lto --enable-plugin --enable-shared --with-gnu-as --with-gnu-ld --with-system-zlib --with-isl --enable-gnu-indirect-function"
+build_dir="yes"
+
+# This is a custom configuration
+do_config() {
+	pushd $SOURCES/$file
+	# Downloads isl, gmp, mpfr and mpc
+	contrib/download_prerequisites
+
+	if [ "$build_dir"="yes" ]; then
+		mkdir build
+		pushd build
+
+		../configure $config
+
+		popd
+	else
+		./configure $config
+	fi
+
+	popd
+}
