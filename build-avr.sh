@@ -62,37 +62,51 @@ main() {
 		printf "\t\turl: %s\n" "$url"
 		printf "\t\tconfig: %s\n" "$config"
 		printf "\t\tbuild dir: %s\n" "$build_dir"
-		## first we need to download the file
-		custom_download=`isFunc do_download`
-		if [ $custom_download ]; then
-			printf "\t\tPackage has custom download function\n"
-			do_download
-		else
-			printf "\t\tPackage using default download function\n"
-			def_download "$url" "$file" "$compress"
-		fi
-		unset custom_download
 
-		custom_config=`isFunc do_config`
-		if [ $custom_config ]; then
-			printf "\t\tPackage has custom config function\n"
-			do_config
-		else
-			printf "\t\tPackage using default config function\n"
-			def_config "$file" "$config" "$build_dir"
-		fi
-		unset custom_config
+		if [ ! -f $PREFIX/.stamp-$file ]; then
+			## first we need to download the file
+			custom_download=`isFunc do_download`
+			if [ $custom_download ]; then
+				printf "\t\tPackage has custom download function\n"
+				do_download
+			else
+				printf "\t\tPackage using default download function\n"
+				def_download "$url" "$file" "$compress"
+			fi
+			unset custom_download
 
-		custom_build=`isFunc do_build`
-		if [ $custom_build ]; then
-			printf "\t\tPackage has custom build function\n"
-			do_build
+			custom_config=`isFunc do_config`
+			if [ $custom_config ]; then
+				printf "\t\tPackage has custom config function\n"
+				do_config
+			else
+				printf "\t\tPackage using default config function\n"
+				def_config "$file" "$config" "$build_dir"
+			fi
+			unset custom_config
+
+			custom_build=`isFunc do_build`
+			if [ $custom_build ]; then
+				printf "\t\tPackage has custom build function\n"
+				do_build
+			else
+				printf "\t\tPackage using default build function\n"
+				def_build "$file" "$build_dir"
+			fi
+			unset custom_build
+
+			custom_install=`isFunc do_install`
+			if [ $custom_install ]; then
+				printf "\t\tPackage has custom install function\n"
+				do_install
+			else
+				printf "\t\tPackage using default install function\n"
+				def_install "$file" "$build_dir"
+			fi			
+			unset custom_install
 		else
-			printf "\t\tPackage using default build function\n"
-			def_build "$file" "$build_dir"
+			printf "\t\tPackage already installed\n"
 		fi
-		unset custom_build
-			
 	done
 }
 
@@ -160,6 +174,27 @@ def_build() {
 	else
 		make
 	fi
+
+	popd
+}
+
+def_install() {
+	file=$1
+	build_dir=$2
+
+	pushd $SOURCES/$file
+
+	if [ "$build_dir"="yes" ]; then
+		pushd build
+
+		make install
+		
+		popd
+	else
+		make install
+	fi
+
+	touch $PREFIX/.stamp-$file
 
 	popd
 }
