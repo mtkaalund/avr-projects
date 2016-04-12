@@ -79,9 +79,7 @@ main() {
 				printf "\t\tPackage using default download function\n"
 				def_download "$url" "$file" "$compress"
 			fi
-#			unset custom_download
 
-#			custom_config=`isFunc do_config`
 			if isFunc do_config; then
 				printf "\t\tPackage has custom config function\n"
 				do_config
@@ -89,9 +87,7 @@ main() {
 				printf "\t\tPackage using default config function\n"
 				def_config "$file" "$config" "$build_dir"
 			fi
-#			unset custom_config
 
-#			custom_build=`isFunc do_build`
 			if isFunc do_build; then
 				printf "\t\tPackage has custom build function\n"
 				do_build
@@ -99,9 +95,7 @@ main() {
 				printf "\t\tPackage using default build function\n"
 				def_build "$file" "$build_dir"
 			fi
-#			unset custom_build
 
-#			custom_install=`isFunc do_install`
 			if isFunc do_install; then
 				printf "\t\tPackage has custom install function\n"
 				do_install
@@ -109,7 +103,6 @@ main() {
 				printf "\t\tPackage using default install function\n"
 				def_install "$file" "$build_dir"
 			fi			
-#			unset custom_install
 		else
 			printf "\t\tPackage already installed\n"
 		fi
