@@ -178,8 +178,8 @@ def_config() {
 
 	pushd $SOURCES/$file
 	if [ "$build_dir"="yes" ]; then
-		mkdir build
-		pushd build
+		mkdir obj-build
+		pushd obj-build
 		
 		../configure $config
 
@@ -198,7 +198,7 @@ def_build() {
 	pushd $SOURCES/$file
 	
 	if [ "$build_dir"="yes" ]; then
-		pushd build
+		pushd obj-build
 
 		make
 
@@ -217,7 +217,7 @@ def_install() {
 	pushd $SOURCES/$file
 
 	if [ "$build_dir"="yes" ]; then
-		pushd build
+		pushd obj-build
 
 		make install
 		
