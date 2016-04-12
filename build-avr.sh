@@ -82,7 +82,7 @@ main() {
 		if [ -f $stamp ]; then
 			source $stamp
 
-			if [ "$installed" -gt "$version" ]; then
+			if [ "$installed" !=  "$version" ]; then
 				doinstall="true"	
 			else
 				doinstall="false"
@@ -90,6 +90,8 @@ main() {
 		else
 			doinstall="true"
 		fi
+
+		rm $stamp
 
 		if [ "$doinstall"=="true" ]; then
 			## first we need to download the file
