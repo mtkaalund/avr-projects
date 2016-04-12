@@ -18,6 +18,12 @@ isFunc() {
 	fi
 }
 
+#strindex is from: http://stackoverflow.com/questions/5031764/position-of-a-string-within-a-string-using-linux-shell-script
+strindex() {
+	x="${1%%$2*}"
+	[[ $x = $1 ]] && echo -1 || echo ${#x}
+}
+
 ## Loading configurations file
 printf "Checking there is a configurations file\n"
 if [ -f "./avr-tools-build.conf" ]; then
@@ -69,9 +75,24 @@ main() {
 		printf "\t\tconfig: %s\n" "$config"
 		printf "\t\tbuild dir: %s\n" "$build_dir"
 
-		if [ ! -f $PREFIX/.stamp-$file ]; then
+		sindex=`strindex $file "-"`
+		stamp=$PREFIX/.stamp-${file:0:$sindex}
+		doinstall="true"	
+
+		if [ -f $stamp ]; then
+			source $stamp
+
+			if [ "$installed" -gt "$version" ]; then
+				doinstall="true"	
+			else
+				doinstall="false"
+			fi
+		else
+			doinstall="true"
+		fi
+
+		if [ "$doinstall"=="true" ]; then
 			## first we need to download the file
-#			custom_download=`isFunc do_download`
 			if isFunc do_download; then
 				printf "\t\tPackage has custom download function\n"
 				do_download
@@ -103,9 +124,22 @@ main() {
 				printf "\t\tPackage using default install function\n"
 				def_install "$file" "$build_dir"
 			fi			
+
+			if isFunc do_cleanup; then
+				printf "\t\tPackage has custom cleanup function\n"
+				do_cleanup
+			else
+				printf "\t\tPackage using default cleanup function\n"
+				def_cleanup "$file"
+			fi
+
+			echo "installed=$version" >> $stamp
 		else
 			printf "\t\tPackage already installed\n"
 		fi
+
+		unset sindex
+		unset stamp
 	done
 }
 
@@ -192,7 +226,15 @@ def_install() {
 		make install
 	fi
 
-	touch $PREFIX/.stamp-$file
+	popd
+}
+
+def_cleanup() {
+	file=$1
+
+	pushd $SOURCES
+
+	rm -rf $file*
 
 	popd
 }
