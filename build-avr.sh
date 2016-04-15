@@ -98,6 +98,7 @@ main() {
 			if isFunc do_download; then
 				printf "\t\tPackage has custom download function\n"
 				do_download
+				unset -f do_download
 			else
 				printf "\t\tPackage using default download function\n"
 				def_download "$url" "$file" "$compress"
@@ -106,6 +107,7 @@ main() {
 			if isFunc do_config; then
 				printf "\t\tPackage has custom config function\n"
 				do_config
+				unset -f do_config
 			else
 				printf "\t\tPackage using default config function\n"
 				def_config "$file" "$config" "$build_dir"
@@ -114,6 +116,7 @@ main() {
 			if isFunc do_build; then
 				printf "\t\tPackage has custom build function\n"
 				do_build
+				unset -f do_build
 			else
 				printf "\t\tPackage using default build function\n"
 				def_build "$file" "$build_dir"
@@ -122,6 +125,7 @@ main() {
 			if isFunc do_install; then
 				printf "\t\tPackage has custom install function\n"
 				do_install
+				unset -f do_install
 			else
 				printf "\t\tPackage using default install function\n"
 				def_install "$file" "$build_dir"
@@ -130,6 +134,7 @@ main() {
 			if isFunc do_cleanup; then
 				printf "\t\tPackage has custom cleanup function\n"
 				do_cleanup
+				unset -f do_cleanup
 			else
 				printf "\t\tPackage using default cleanup function\n"
 				def_cleanup "$file"
