@@ -84,6 +84,7 @@ main() {
 
 			if [ "$installed" !=  "$version" ]; then
 				doinstall="true"	
+				rm $stamp
 			else
 				doinstall="false"
 			fi
@@ -91,7 +92,6 @@ main() {
 			doinstall="true"
 		fi
 
-		rm $stamp
 
 		if [ "$doinstall"=="true" ]; then
 			## first we need to download the file
