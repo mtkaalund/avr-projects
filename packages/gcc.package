@@ -13,8 +13,8 @@ do_config() {
 	contrib/download_prerequisites
 
 	if [ "$build_dir"="yes" ]; then
-		mkdir build
-		pushd build
+		mkdir -p obj-build
+		pushd obj-build
 
 		../configure $config
 
