@@ -1,0 +1,22 @@
+### package file: simavr
+version="6.3"
+compress="tar.gz"
+file="avrdude-$version"
+url="http://download.savannah.gnu.org/releases/avrdude/$file.$compress"
+config="--prefix=$PREFIX"
+build_dir="no"
+
+do_config() {
+}
+
+do_build() {
+	pushd $SOURCES/$file
+	make AVR_ROOT="$PREFIX/avr" RELEASE=1 CFLAGS="-O0 -Wall -Wextra -g -fPIC -std=gnu99 -Wno-sign-compare -Wno-unused-parameter" build-simavr
+	popd
+}
+
+do_install() {
+	pushd $SOURCES/$file
+	make AVR_ROOT="$PREFIX/avr" PREFIX="$PREFIX" DESTDIR="$PREFIX" install
+	popd
+}
