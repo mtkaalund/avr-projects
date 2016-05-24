@@ -1,9 +1,9 @@
 ### package file: simavr
-version="6.3"
+version="1.3"
 compress="tar.gz"
-file="avrdude-$version"
-url="http://download.savannah.gnu.org/releases/avrdude/$file.$compress"
-config="--prefix=$PREFIX"
+file="v$version"
+url="https://github.com/buserror/simavr/archive/$file.$compress"
+config=""
 build_dir="no"
 
 do_config() {
