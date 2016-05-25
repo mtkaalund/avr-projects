@@ -75,8 +75,9 @@ main() {
 		printf "\t\tconfig: %s\n" "$config"
 		printf "\t\tbuild dir: %s\n" "$build_dir"
 
-		sindex=`strindex $file "-"`
-		stamp=$PREFIX/.stamp-${file:0:$sindex}
+		bindex=`strindex $package "_"` # This is for removing the 0*_
+		eindex=`strindex $package "."` # This is for removing the *.package
+		stamp=$PREFIX/.stamp-${package:$bindex+1:$eindex-3}
 		doinstall="true"	
 
 		if [ -f $stamp ]; then
@@ -91,7 +92,6 @@ main() {
 		else
 			doinstall="true"
 		fi
-
 
 		if [ "$doinstall"=="true" ]; then
 			## first we need to download the file
