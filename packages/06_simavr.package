@@ -7,16 +7,17 @@ config=""
 build_dir="no"
 
 do_config() {
+	printf "No config needed"
 }
 
 do_build() {
-	pushd $SOURCES/$file
+	pushd $SOURCES/simavr-$version
 	make AVR_ROOT="$PREFIX/avr" RELEASE=1 CFLAGS="-O0 -Wall -Wextra -g -fPIC -std=gnu99 -Wno-sign-compare -Wno-unused-parameter" build-simavr
 	popd
 }
 
 do_install() {
-	pushd $SOURCES/$file
+	pushd $SOURCES/simavr-$version
 	make AVR_ROOT="$PREFIX/avr" PREFIX="$PREFIX" DESTDIR="$PREFIX" install
 	popd
 }
