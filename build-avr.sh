@@ -202,9 +202,13 @@ def_build() {
 	file=$1
 	build_dir=$2
 
-	if [ "$use_all_cores" == "yes" ]; then
-		# Get all cores
-		cores=`grep -c ^processor /proc/cpuinfo`		
+	if [ -n "$use_all_cores" ]; then
+		if [ "$use_all_cores" == "yes" ]; then
+			# Get all cores
+			cores=`grep -c ^processor /proc/cpuinfo`		
+		else
+			cores=1
+		fi
 	else
 		cores=1
 	fi
