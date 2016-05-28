@@ -202,16 +202,30 @@ def_build() {
 	file=$1
 	build_dir=$2
 
+	if [ "$use_all_cores" == "yes" ]; then
+		# Get all cores
+		cores=`grep -c ^processor /proc/cpuinfo`		
+	else
+		cores=1
+	fi
+
+	if [ -n "$use_cores" ]; then
+		# Use user defined cores
+		cores=$use_cores
+	else
+		cores=1
+	fi
+
 	pushd $SOURCES/$file
 	
 	if [ "$build_dir"="yes" ]; then
 		pushd obj-build
 
-		make
+		make -j$cores
 
 		popd
 	else
-		make
+		make -j$cores
 	fi
 
 	popd
