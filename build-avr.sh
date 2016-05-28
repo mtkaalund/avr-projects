@@ -209,12 +209,8 @@ def_build() {
 		else
 			cores=1
 		fi
-	else
-		cores=1
-	fi
-
-	if [ -n "$use_cores" ]; then
-		# Use user defined cores
+	elif [ -n "$use_cores" ]; then
+		# User has defined number of cores to use
 		cores=$use_cores
 	else
 		cores=1
