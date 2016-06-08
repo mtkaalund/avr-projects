@@ -1,0 +1,6 @@
+{
+  "name": "Avr-tools-build",
+  "tagline": "Automate build and install of AVR compiler and toolchain",
+  "body": "# avr-tools-build\r\nAutomate build and install of AVR compiler and toolchain\r\n\r\n## build-avr.sh\r\nThis is a script for compiling the avr toolchain in a local directory.\r\nAt default this will download the source code for the following packages:\r\n- Binutils\t2.26\r\n- GCC\t\t5.3.0\r\n- GMP\t\t6.1.0\r\n- MPC\t\t1.0.3\r\n- ISL\t\t0.16.1\r\n- AVR libc\t2.0.0\r\n- GDB\t\t7.11\r\n- simAVR\t1.3\r\n\r\nPlease read the TODO.md\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
