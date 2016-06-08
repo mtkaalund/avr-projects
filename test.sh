@@ -4,7 +4,7 @@ depends="binutils gcc acy"
 
 for package in ${depends}
 do
-	echo $package
+	echo $package packages/$package.package
 	if [ -f packages/$package.package ]; then
 		echo "  Can be resolved"
 	else
