@@ -1,5 +1,5 @@
 ### package file: gcc
-version="5.3.0"
+version="6.1.0"
 compress="tar.gz"
 file="gcc-$version"
 url="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/$file/$file.$compress"
