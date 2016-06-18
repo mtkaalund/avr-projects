@@ -5,7 +5,7 @@ Automate build and install of AVR compiler and toolchain
 This is a script for compiling the avr toolchain in a local directory.
 At default this will download the source code for the following packages:
 - Binutils	2.26
-- GCC		5.3.0
+- GCC		6.1.0
 - GMP		6.1.0
 - MPC		1.0.3
 - ISL		0.16.1
