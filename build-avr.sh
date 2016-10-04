@@ -67,6 +67,11 @@ main() {
 		unset url
 		unset config
 		unset build_dir
+		unset installed
+		unset doinstall
+		unset sindex
+		unset stamp
+
 		printf "\tSourcing %s\n" "$package"
 		source ${package_directory}/$package
 		printf "\t\tversion: %s\n" "$version"
