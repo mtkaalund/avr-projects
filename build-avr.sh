@@ -81,11 +81,13 @@ main() {
 
 		if [ -f $stamp ]; then
 			source $stamp
-
-			if [ "$installed" !=  "$version" ]; then
-				doinstall="true"	
-				rm $stamp
-			else
+	
+			if [ "${installed}" == "${version}" ]; then
+				doinstall="false"
+			elif [ "${version//./}" -gt "${installed//./}" ]; then
+				doinstall="true"
+				rm ${stamp}
+			else 
 				doinstall="false"
 			fi
 		else
