@@ -61,101 +61,6 @@ main() {
 	for package in `ls ${package_directory}`
 	do
 		def_install_package "${package}"
-#		#first we need to unset the variables
-#		unset version
-#		unset compress
-#		unset file
-#		unset url
-#		unset config
-#		unset build_dir
-#		unset installed
-#		unset doinstall
-#		unset sindex
-#		unset stamp
-#
-#		printf "\tSourcing %s\n" "${package}"
-#		source ${package_directory}/${package}
-#		printf "\t\tversion: %s\n" "${version}"
-#		printf "\t\tfile: %s.%s\n" "${file}" "${compress}"
-#		printf "\t\turl: %s\n" "${url}"
-#		printf "\t\tconfig: %s\n" "${config}"
-#		printf "\t\tbuild dir: %s\n" "${build_dir}"
-#		printf "\t\tdepends: $s\n" "${depends}"
-#
-#		sindex=`strindex ${file} "-"`
-#		stamp=${PREFIX}/.stamp-${file:0:$sindex}
-#		doinstall="true"	
-#
-#		if [ -f ${stamp} ]; then
-#			source ${stamp}
-#	
-#			if [ "${installed}" == "${version}" ]; then
-#				doinstall="false"
-#			elif [ "${version//./}" -gt "${installed//./}" ]; then
-#				doinstall="true"
-#				rm ${stamp}
-#			else 
-#				doinstall="false"
-#			fi
-#		else
-#			doinstall="true"
-#		fi
-#
-#
-#		if [ "${doinstall}"=="true" ]; then
-#			## first we need to download the file
-#			if isFunc do_download; then
-#				printf "\t\tPackage has custom download function\n"
-#				do_download
-#				unset -f do_download
-#			else
-#				printf "\t\tPackage using default download function\n"
-#				def_download "${url}" "${file}" "${compress}"
-#			fi
-#
-#			if isFunc do_config; then
-#				printf "\t\tPackage has custom config function\n"
-#				do_config
-#				unset -f do_config
-#			else
-#				printf "\t\tPackage using default config function\n"
-#				def_config "${file}" "${config}" "${build_dir}"
-#			fi
-#
-#			if isFunc do_build; then
-#				printf "\t\tPackage has custom build function\n"
-#				do_build
-#				unset -f do_build
-#			else
-#				printf "\t\tPackage using default build function\n"
-#				def_build "${file}" "${build_dir}"
-#			fi
-#
-#			if isFunc do_install; then
-#				printf "\t\tPackage has custom install function\n"
-#				do_install
-#				unset -f do_install
-#			else
-#				printf "\t\tPackage using default install function\n"
-#				def_install "${file}" "${build_dir}"
-#			fi			
-#
-#			if isFunc do_cleanup; then
-#				printf "\t\tPackage has custom cleanup function\n"
-#				do_cleanup
-#				unset -f do_cleanup
-#			else
-#				printf "\t\tPackage using default cleanup function\n"
-#				def_cleanup "${file}"
-#			fi
-#
-#			echo "installed=${version}" >> ${stamp}
-#		else
-#			printf "\t\tPackage already installed\n"
-#		fi
-#
-#		unset sindex
-#		unset stamp
 	done
 }
 
@@ -173,6 +78,7 @@ def_install_package() {
 	unset doinstall
 	unset sindex
 	unset stamp
+	unset depends
 
 	printf "\tSourcing %s\n" "${package}"
 	source ${package_directory}/${package}
@@ -189,17 +95,20 @@ def_install_package() {
 		# First we check if it is installed
 		if [ ! -f ${PREFIX}/.stamp-$dep ]; then
 			# Next we check if there is package which we can install
-			if [ -f ${package_directory}/${dep} ]; then
+			if [ -f ${package_directory}/${dep}.package ]; then
 				printf "\t\t${dep} found in packages\n"
-				def_install_package ${dep}
+				def_install_package ${dep}.package
 			else
 				# if not found breaks install
+				printf "\t\t${dep} not found in packages\n"
 				return -1
 			fi
 		else
 			printf "\t\t${dep} is installed\n"
 		fi
 	done
+	
+	source ${package_directory}/${package}
 
 	sindex=`strindex ${file} "-"`
 	stamp=${PREFIX}/.stamp-${file:0:$sindex}
@@ -326,16 +235,30 @@ def_build() {
 	file=$1
 	build_dir=$2
 
+	if [ -n "${use_all_cores}" ]; then
+		if [ "${use_all_cores}" == "yes" ]; then
+			# Get all cores
+			cores=`grep -c ^processor /proc/cpuinfo`
+		else
+			cores=1
+		fi
+	elif [ -n "${use_cores}" ]; then
+		# User has defined number of cores to use
+		cores=${use_cores}
+	else
+		cores=1
+	fi
+
 	pushd $SOURCES/$file
 	
 	if [ "$build_dir"="yes" ]; then
 		pushd obj-build
 
-		make
+		make -j${cores}
 
 		popd
 	else
-		make
+		make -j${cores}
 	fi
 
 	popd
