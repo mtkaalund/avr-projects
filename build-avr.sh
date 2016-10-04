@@ -72,20 +72,21 @@ main() {
 		unset sindex
 		unset stamp
 
-		printf "\tSourcing %s\n" "$package"
-		source ${package_directory}/$package
-		printf "\t\tversion: %s\n" "$version"
-		printf "\t\tfile: %s.%s\n" "$file" "$compress"
-		printf "\t\turl: %s\n" "$url"
-		printf "\t\tconfig: %s\n" "$config"
-		printf "\t\tbuild dir: %s\n" "$build_dir"
+		printf "\tSourcing %s\n" "${package}"
+		source ${package_directory}/${package}
+		printf "\t\tversion: %s\n" "${version}"
+		printf "\t\tfile: %s.%s\n" "${file}" "${compress}"
+		printf "\t\turl: %s\n" "${url}"
+		printf "\t\tconfig: %s\n" "${config}"
+		printf "\t\tbuild dir: %s\n" "${build_dir}"
+		printf "\t\tdepends: $s\n" "${depends}"
 
-		sindex=`strindex $file "-"`
-		stamp=$PREFIX/.stamp-${file:0:$sindex}
+		sindex=`strindex ${file} "-"`
+		stamp=${PREFIX}/.stamp-${file:0:$sindex}
 		doinstall="true"	
 
-		if [ -f $stamp ]; then
-			source $stamp
+		if [ -f ${stamp} ]; then
+			source ${stamp}
 	
 			if [ "${installed}" == "${version}" ]; then
 				doinstall="false"
@@ -100,7 +101,7 @@ main() {
 		fi
 
 
-		if [ "$doinstall"=="true" ]; then
+		if [ "${doinstall}"=="true" ]; then
 			## first we need to download the file
 			if isFunc do_download; then
 				printf "\t\tPackage has custom download function\n"
@@ -108,7 +109,7 @@ main() {
 				unset -f do_download
 			else
 				printf "\t\tPackage using default download function\n"
-				def_download "$url" "$file" "$compress"
+				def_download "${url}" "${file}" "${compress}"
 			fi
 
 			if isFunc do_config; then
@@ -117,7 +118,7 @@ main() {
 				unset -f do_config
 			else
 				printf "\t\tPackage using default config function\n"
-				def_config "$file" "$config" "$build_dir"
+				def_config "${file}" "${config}" "${build_dir}"
 			fi
 
 			if isFunc do_build; then
@@ -126,7 +127,7 @@ main() {
 				unset -f do_build
 			else
 				printf "\t\tPackage using default build function\n"
-				def_build "$file" "$build_dir"
+				def_build "${file}" "${build_dir}"
 			fi
 
 			if isFunc do_install; then
@@ -135,7 +136,7 @@ main() {
 				unset -f do_install
 			else
 				printf "\t\tPackage using default install function\n"
-				def_install "$file" "$build_dir"
+				def_install "${file}" "${build_dir}"
 			fi			
 
 			if isFunc do_cleanup; then
@@ -144,10 +145,10 @@ main() {
 				unset -f do_cleanup
 			else
 				printf "\t\tPackage using default cleanup function\n"
-				def_cleanup "$file"
+				def_cleanup "${file}"
 			fi
 
-			echo "installed=$version" >> $stamp
+			echo "installed=${version}" >> ${stamp}
 		else
 			printf "\t\tPackage already installed\n"
 		fi
