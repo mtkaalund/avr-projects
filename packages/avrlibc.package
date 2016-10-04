@@ -5,3 +5,4 @@ file="avr-libc-$version"
 url="http://download.savannah.gnu.org/releases/avr-libc/$file.$compress"
 config="--prefix=$PREFIX --host=avr"
 build_dir="no"
+depends=("binutils" "gcc")
