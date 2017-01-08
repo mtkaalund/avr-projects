@@ -12,12 +12,12 @@ do_config() {
 
 do_build() {
 	pushd $SOURCES/simavr-$version
-	make AVR_ROOT="$PREFIX/avr" RELEASE=1 CFLAGS="-O0 -Wall -Wextra -g -fPIC -std=gnu99 -Wno-sign-compare -Wno-unused-parameter" build-simavr
+	make AVR_ROOT="$PREFIX/avr" RELEASE=1 PREFIX="$PREFIX" DESTDIR="$PREFIX" CFLAGS="-O0 -Wall -Wextra -g -fPIC -std=gnu99 -Wno-sign-compare -Wno-unused-parameter"
 	popd
 }
 
 do_install() {
 	pushd $SOURCES/simavr-$version
-	make AVR_ROOT="$PREFIX/avr" PREFIX="$PREFIX" DESTDIR="$PREFIX" install
+	make AVR_ROOT="$PREFIX/avr" RELEASE=1 PREFIX="$PREFIX" DESTDIR="$PREFIX" install
 	popd
 }
